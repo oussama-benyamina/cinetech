@@ -3,13 +3,15 @@ require_once 'includes/header.php';
 require_once 'includes/jikan_client.php';
 require_once 'db_connect.php';
 
+$jikan = new JikanAPI();
+
 $query = $_GET['q'] ?? '';
-$page = $_GET['page'] ?? 1;
-$limit = 10; // Nombre d'animes par page
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$limit = 10;
 
 if ($query) {
     try {
-        $searchResults = $jikan->getAnimeSearch($query, $page, $limit);
+        $searchResults = $jikan->searchAnime($query, $page, $limit);
         
         if (isset($searchResults['data']) && is_array($searchResults['data'])) {
             echo "<h2>Résultats de recherche pour : " . htmlspecialchars($query) . "</h2>";
@@ -52,7 +54,8 @@ if ($query) {
             echo "<p>Aucun résultat trouvé.</p>";
         }
     } catch (Exception $e) {
-        echo "<p>Une erreur est survenue : " . htmlspecialchars($e->getMessage()) . "</p>";
+        error_log("Erreur dans search.php: " . $e->getMessage());
+        echo "<p>Une erreur est survenue lors de la recherche. Veuillez réessayer plus tard.</p>";
     }
 } else {
     echo "<p>Veuillez entrer un terme de recherche.</p>";
@@ -82,73 +85,15 @@ $(document).ready(function() {
                         button.data('is-favorite', 'false');
                     }
                 } else {
-                    alert('Une erreur est survenue.');
+                    alert('Une erreur est survenue : ' + (response.message || 'Erreur inconnue'));
                 }
             },
             error: function() {
-                alert('Une erreur est survenue.');
+                alert('Une erreur est survenue lors de la communication avec le serveur.');
             }
         });
     });
 });
 </script>
-
-<style>
-.anime-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-.anime-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 10px;
-    text-align: center;
-}
-
-.anime-card img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-}
-
-.favorite-btn {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.favorite-btn[data-is-favorite='true'] {
-    background-color: #f44336;
-}
-
-.pagination {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.pagination a {
-    color: black;
-    padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color .3s;
-    border: 1px solid #ddd;
-    margin: 0 4px;
-}
-
-.pagination a:hover {
-    background-color: #ddd;
-}
-</style>
 
 <?php require_once 'includes/footer.php'; ?>

@@ -3,11 +3,16 @@ require_once 'includes/header.php';
 require_once 'includes/jikan_client.php';
 require_once 'db_connect.php';
 
+$jikan = new JikanAPI();
+
 try {
-    $topAnime = $jikan->getTopAnime(1, 10);
+    $topAnime = $jikan->getTopAnime(1,16 );
+    $genres = $jikan->getAnimeGenres();
     
+    echo "<h1>Bienvenue sur Cinetech Anime</h1>";
+
     if (isset($topAnime['data']) && is_array($topAnime['data'])) {
-        echo "<h1>Animes populaires</h1>";
+        echo "<h2>Animes populaires</h2>";
         echo "<div class='anime-grid'>";
         foreach ($topAnime['data'] as $anime) {
             $isFavorite = false;
@@ -33,14 +38,24 @@ try {
         }
         echo "</div>";
     } else {
-        echo "<p>Aucun anime trouvé.</p>";
+        echo "<p>Aucun anime trouvé pour le moment.</p>";
     }
-} catch (Exception $e) {
-    echo "<p>Une erreur est survenue : " . htmlspecialchars($e->getMessage()) . "</p>";
-}
 
-// Ajoutez ce script JavaScript à la fin de votre fichier
+    if (isset($genres['data']) && is_array($genres['data'])) {
+        echo "<h2>Genres d'anime</h2>";
+        echo "<ul class='genre-list'>";
+        foreach ($genres['data'] as $genre) {
+            echo "<li><a href='genre.php?id=" . $genre['mal_id'] . "'>" . htmlspecialchars($genre['name']) . "</a></li>";
+        }
+        echo "</ul>";
+    }
+
+} catch (Exception $e) {
+    error_log("Erreur dans index.php: " . $e->getMessage());
+    echo "<p>Une erreur est survenue lors du chargement de la page. Veuillez réessayer plus tard.</p>";
+}
 ?>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -64,17 +79,15 @@ $(document).ready(function() {
                         button.data('is-favorite', 'false');
                     }
                 } else {
-                    alert('Une erreur est survenue.');
+                    alert('Une erreur est survenue : ' + (response.message || 'Erreur inconnue'));
                 }
             },
             error: function() {
-                alert('Une erreur est survenue.');
+                alert('Une erreur est survenue lors de la communication avec le serveur.');
             }
         });
     });
 });
 </script>
 
-<?php
-require_once 'includes/footer.php';
-?>
+<?php require_once 'includes/footer.php'; ?>
