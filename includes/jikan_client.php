@@ -58,7 +58,7 @@ class JikanAPI {
     }
 
     public function getAnimeDetails($id) {
-        return $this->makeRequest("/anime/{$id}");
+        return $this->makeRequest("/anime/$id");
     }
 
     public function searchAnime($query, $page = 1, $limit = 25) {
