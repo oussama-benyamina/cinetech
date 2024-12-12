@@ -72,6 +72,7 @@ class JikanAPI {
             'limit' => $limit
         ]);
     }
+
     public function getAnimeGenres() {
         return $this->makeRequest('/genres/anime');
     }

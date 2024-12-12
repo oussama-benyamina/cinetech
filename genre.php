@@ -53,10 +53,10 @@ try {
             $totalPages = $animeGenre['pagination']['last_visible_page'];
             echo "<div class='pagination'>";
             if ($page > 1) {
-                echo "<a href='?id=$genre_id&page=" . ($page - 1) . "'>Précédent</a> ";
+                echo "<a href='?id=$genre_id&page=" . ($page - 1) . "'><button class='pagination-btn'>Précédent</button></a> ";
             }
             if ($page < $totalPages) {
-                echo "<a href='?id=$genre_id&page=" . ($page + 1) . "'>Suivant</a>";
+                echo "<a href='?id=$genre_id&page=" . ($page + 1) . "'><button class='pagination-btn'>Suivant</button></a>";
             }
             echo "</div>";
         }
@@ -69,7 +69,4 @@ try {
     echo "<p>Une erreur est survenue lors du chargement des animes. Veuillez réessayer plus tard.</p>";
 }
 ?>
-
-<!-- Le reste du code (CSS et JavaScript) reste inchangé -->
-
 <?php require_once 'includes/footer.php'; ?>
